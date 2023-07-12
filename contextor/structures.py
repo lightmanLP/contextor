@@ -8,6 +8,7 @@ class Event(IntEnum):
 
 class Color(IntEnum):
     PURPLE = 0x550055A0
+    RED = 0x550000A0
 
     @functools.cached_property
     def rgba(self) -> tuple[int, int, int, int]:

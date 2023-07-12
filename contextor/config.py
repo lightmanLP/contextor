@@ -5,11 +5,12 @@ import io
 
 from typing_extensions import Self
 from pydantic import BaseModel, Extra, Field
-import oyaml as yaml
+from ruamel.yaml import YAML
 
 
 config: "Config"
 T = TypeVar("T")
+yaml = YAML(typ="safe", pure=True)
 loop = asyncio.get_event_loop_policy().get_event_loop()
 
 
@@ -49,9 +50,9 @@ class Config(Model):
             case Path():
                 assert dump.exists() and dump.is_file()
                 with open(dump, "r", encoding="UTF8") as file:
-                    return yaml.load(file, yaml.FullLoader) or dict()
+                    return yaml.load(file) or dict()
             case str():
-                return yaml.load(io.StringIO(dump), yaml.FullLoader) or dict()
+                return yaml.load(io.StringIO(dump)) or dict()
             case _:
                 return dump
 

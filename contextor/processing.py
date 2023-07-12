@@ -5,20 +5,15 @@ from .binds import mouse_ctrl
 from . import tools, layout
 
 
-@layout.window.event
-def on_draw():
-    layout.window.clear()
-    layout.circle.draw()
-
-
-@layout.window.event("on_deactivate")
+# TODO: rework
+# @layout.window.event("on_deactivate")
 def on_unfocus():
     hide_window()
 
 
 @tools.event_mngr.on(Event.HIDE)
 def hide_window():
-    if layout.window.visible:
+    if not layout.window.visible:
         layout.window.set_location(
             *np.clip(
                 mouse_ctrl.position - np.array(layout.window.size) // 2,
