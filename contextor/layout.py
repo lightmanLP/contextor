@@ -2,7 +2,7 @@ from typing import Final
 from pathlib import Path
 
 from pyglet.window import Window
-from pyglet import gl, graphics, shapes, canvas, compat_platform
+from pyglet import gl, graphics, shapes, canvas, image, gui, compat_platform
 import numpy as np
 from ruamel.yaml import YAML
 
@@ -38,7 +38,7 @@ window = Window(
 center = np.array(window.size) // 2
 
 # no taskbar icon patch
-if compat_platform in ('cygwin', 'win32'):
+if compat_platform in ("cygwin", "win32"):
     from pyglet.libs.win32.constants import WS_EX_TOOLWINDOW, GWL_EXSTYLE
     from pyglet.libs.win32 import _user32
     window._ex_ws_style |= WS_EX_TOOLWINDOW
@@ -48,14 +48,14 @@ if compat_platform in ('cygwin', 'win32'):
 ### DEBUG
 count = 0
 from .tools import event_mngr
-@event_mngr.on(2)
-def inc():
-    global count
-    count += 1
-@event_mngr.on(3)
+@event_mngr.on(98)
 def dec():
     global count
     count -= 1
+@event_mngr.on(99)
+def inc():
+    global count
+    count += 1
 ###
 
 
@@ -63,27 +63,29 @@ def dec():
 def on_draw():
     window.clear()
     batch = graphics.Batch()
+    stash = list()
 
     if count == 0:
-        main_circle = shapes.Circle(
-            *center,
-            CIRCLE_RADIUS,
-            color=Color.RED.rgba,
-            batch=batch
+        stash.append(
+            shapes.Circle(
+                *center,
+                CIRCLE_RADIUS,
+                color=Color.RED.rgba,
+                batch=batch
+            )
         )
 
     else:
         for max_count, points in layout.items():
             if count <= max_count:
                 break
-        circles = [
+        stash.extend(
             shapes.Circle(
                 *(center + point),
                 CIRCLE_RADIUS,
                 color=Color.PURPLE.rgba,
                 batch=batch
-            )
-            for point in points[:count]
-        ]
+            ) for point in points[:count]
+        )
 
     batch.draw()

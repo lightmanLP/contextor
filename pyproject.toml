@@ -20,6 +20,7 @@ typing-extensions = "^4.7.1"
 numpy = "^1.25.1"
 pynput = "^1.7.6"
 ruamel-yaml = "^0.17.32"
+bezier = "^2023.7.28"
 
 
 [tool.poetry.group.dev.dependencies]

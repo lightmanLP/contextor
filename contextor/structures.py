@@ -4,6 +4,7 @@ import functools
 
 class Event(IntEnum):
     HIDE = 1
+    CLICK = 2
 
 
 class Color(IntEnum):

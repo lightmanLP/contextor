@@ -1,6 +1,7 @@
 from typing import Iterator, Literal
 from collections import defaultdict
 from pathlib import Path
+import functools
 import math
 
 import numpy as np
@@ -18,17 +19,18 @@ class NonAliasingRepresenter(representer.RoundTripRepresenter):
 
 yaml = YAML(typ="safe", pure=True)
 yaml.Representer = NonAliasingRepresenter
-yaml._indent(mapping=2, sequence=4, offset=2)
+yaml.indent(mapping=2, sequence=4, offset=2)
 
 r = layout.CIRCLE_RADIUS + 2
 base_r_big = int(r * 2)
 r_step = r * 2
 
 
+# TODO: replace with np.cos, np.sin
 def calc_coords(r_big: int, count: int) -> Iterator[tuple[int, int]]:
+    offset = r_big - r
     for i in range(count):
         cur = (2 * math.pi) * i / count
-        offset = r_big - r
         coords = (
             offset * math.cos(cur),
             offset * math.sin(cur)
@@ -36,13 +38,16 @@ def calc_coords(r_big: int, count: int) -> Iterator[tuple[int, int]]:
         yield tuple(map(int, coords))
 
 
+@functools.cache
 def calc_count(r_big: int) -> int:
     ratio = r / (r_big - r)
-    step = abs(math.asin(ratio) * 180) / math.pi
-    return int(180 // step)
+    return int(math.pi / abs(math.asin(ratio)))
 
 
-def run(max_first_layer_count: int | None, bottom_line: int | None):
+def run(
+    max_first_layer_count: int | None = None,
+    bottom_line: int | None = None
+):
     max_first_layer_count = max_first_layer_count or 8
     bottom_line = bottom_line or 3
 
